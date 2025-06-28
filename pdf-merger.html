@@ -1,25 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- SEO Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merge PDF Files Online - Free PDF Combiner | PDFTools</title>
-    <meta name="description" content="Combine multiple PDF files into one document online. Free, secure, and easy to use. No registration required.">
-    <meta name="keywords" content="pdf merger, combine pdf, merge pdf online, pdf combiner, free pdf tools">
-    <meta name="author" content="PDFTools">
-    <link rel="canonical" href="https://yourdomain.com/pdf-merger">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="favicon.ico">
-    
-    <!-- Fonts & Icons -->
+    <title>Merge PDF Files Online - Free PDF Combiner</title>
+    <meta name="description" content="Combine multiple PDF files into one document online. Free, secure, and easy to use.">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
-    
     <style>
         :root {
             --primary: #4a6bff;
@@ -47,6 +36,8 @@
             background-color: #f5f8ff;
             color: var(--dark);
             line-height: 1.6;
+            padding: 0;
+            margin: 0;
         }
 
         .container {
@@ -56,7 +47,6 @@
             padding: 0 20px;
         }
 
-        /* Header */
         header {
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -82,7 +72,6 @@
             gap: 10px;
         }
 
-        /* Tool Container */
         .tool-container {
             background-color: white;
             border-radius: var(--border-radius);
@@ -112,7 +101,6 @@
             margin: 0 auto;
         }
 
-        /* Upload Area */
         .upload-area {
             border: 2px dashed var(--gray);
             border-radius: var(--border-radius);
@@ -145,7 +133,6 @@
             display: none;
         }
 
-        /* PDF List */
         .pdf-list {
             margin: 25px 0;
         }
@@ -233,7 +220,6 @@
             background-color: rgba(74, 107, 255, 0.1);
         }
 
-        /* Action Buttons */
         .action-buttons {
             display: flex;
             justify-content: center;
@@ -276,7 +262,6 @@
             background-color: #e2e6ea;
         }
 
-        /* Results Section */
         .results {
             display: none;
             text-align: center;
@@ -298,7 +283,6 @@
             margin-bottom: 15px;
         }
 
-        /* Loading Spinner */
         .spinner {
             display: none;
             width: 50px;
@@ -315,18 +299,12 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Ad Blocks */
-        .ad-block {
-            background-color: white;
-            padding: 20px;
-            margin: 30px auto;
+        .empty-state {
             text-align: center;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            max-width: 728px;
+            padding: 30px;
+            color: var(--gray);
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .tool-header h1 {
                 font-size: 1.8rem;
@@ -380,11 +358,11 @@
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo">
+                <a href="#" class="logo">
                     <i class="fas fa-file-pdf"></i>
                     <span>PDFTools</span>
                 </a>
-                <a href="index.html" class="btn btn-secondary">
+                <a href="#" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> More Tools
                 </a>
             </nav>
@@ -392,19 +370,6 @@
     </header>
 
     <div class="container">
-        <!-- Top Ad Block -->
-        <div class="ad-block">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
-                 data-ad-slot="YOUR_TOP_AD_SLOT"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-
         <div class="tool-container">
             <div class="tool-header">
                 <h1>Merge PDF Files</h1>
@@ -421,9 +386,8 @@
             </div>
             
             <div id="pdfList" class="pdf-list">
-                <!-- PDF items will be added here dynamically -->
                 <div class="empty-state">
-                    <i class="fas fa-file-pdf" style="font-size: 2.5rem; color: var(--light-gray); margin-bottom: 15px;"></i>
+                    <i class="fas fa-file-pdf" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
                     <p>No PDF files added yet</p>
                 </div>
             </div>
@@ -445,29 +409,15 @@
                 </div>
                 <h3>Your PDF is ready!</h3>
                 <p>Combined document created successfully</p>
-                <a id="downloadBtn" href="#" class="btn btn-primary" style="margin-top: 20px;">
+                <button id="downloadBtn" class="btn btn-primary" style="margin-top: 20px;">
                     <i class="fas fa-download"></i> Download Merged PDF
-                </a>
+                </button>
             </div>
-        </div>
-
-        <!-- Bottom Ad Block -->
-        <div class="ad-block">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
-                 data-ad-slot="YOUR_BOTTOM_AD_SLOT"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
             const fileInput = document.getElementById('fileInput');
             const uploadArea = document.getElementById('uploadArea');
             const pdfList = document.getElementById('pdfList');
@@ -479,6 +429,7 @@
             
             let pdfFiles = [];
             let dragItem = null;
+            let mergedPdfBytes = null;
             
             // Initialize tool
             initUploadArea();
@@ -517,7 +468,6 @@
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     
-                    // Validate PDF files
                     if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
                         pdfFiles.push(file);
                         validFiles++;
@@ -530,7 +480,6 @@
                     alert('Please upload valid PDF files only.');
                 }
                 
-                // Reset file input
                 fileInput.value = '';
             }
             
@@ -538,7 +487,7 @@
                 if (pdfFiles.length === 0) {
                     pdfList.innerHTML = `
                         <div class="empty-state">
-                            <i class="fas fa-file-pdf" style="font-size: 2.5rem; color: var(--light-gray); margin-bottom: 15px;"></i>
+                            <i class="fas fa-file-pdf" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
                             <p>No PDF files added yet</p>
                         </div>
                     `;
@@ -574,7 +523,6 @@
                     pdfList.appendChild(pdfItem);
                 });
                 
-                // Add event listeners to delete buttons
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const index = e.currentTarget.dataset.index;
@@ -583,7 +531,6 @@
                     });
                 });
                 
-                // Add event listeners to preview buttons
                 document.querySelectorAll('.preview-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const index = e.currentTarget.dataset.index;
@@ -593,7 +540,6 @@
             }
             
             function initDragAndDrop() {
-                // Drag start
                 pdfList.addEventListener('dragstart', (e) => {
                     if (e.target.classList.contains('pdf-item')) {
                         dragItem = e.target;
@@ -603,7 +549,6 @@
                     }
                 });
                 
-                // Drag end
                 pdfList.addEventListener('dragend', () => {
                     if (dragItem) {
                         dragItem.classList.remove('dragging');
@@ -612,7 +557,6 @@
                     }
                 });
                 
-                // Drag over
                 pdfList.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     if (!dragItem) return;
@@ -651,7 +595,6 @@
                 });
                 pdfFiles = newPdfFiles;
                 
-                // Update data-index attributes
                 document.querySelectorAll('.pdf-item').forEach((item, index) => {
                     item.dataset.index = index;
                 });
@@ -662,49 +605,76 @@
                 window.open(pdfUrl, '_blank');
             }
             
-            // Merge PDFs (simulated - replace with actual PDF merging library)
-            mergeBtn.addEventListener('click', function() {
+            async function mergePdfs(pdfFiles) {
+                const { PDFDocument } = PDFLib;
+                const mergedPdf = await PDFDocument.create();
+                
+                for (const pdfFile of pdfFiles) {
+                    try {
+                        const pdfBytes = await pdfFile.arrayBuffer();
+                        const pdfDoc = await PDFDocument.load(pdfBytes);
+                        
+                        const pages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                        pages.forEach(page => mergedPdf.addPage(page));
+                    } catch (err) {
+                        console.error(`Error processing ${pdfFile.name}:`, err);
+                        throw new Error(`Failed to process ${pdfFile.name}. It may be corrupted or password protected.`);
+                    }
+                }
+                
+                return await mergedPdf.save();
+            }
+            
+            function getMergedFilename() {
+                if (pdfFiles.length === 1) {
+                    return pdfFiles[0].name.replace('.pdf', '-merged.pdf');
+                }
+                const baseName = pdfFiles[0].name.split('.')[0];
+                return `${baseName}-merged-${new Date().getTime()}.pdf`;
+            }
+            
+            mergeBtn.addEventListener('click', async function() {
                 if (pdfFiles.length === 0) {
                     alert('Please add at least one PDF file.');
                     return;
                 }
                 
-                // Show loading state
                 spinner.style.display = 'block';
                 mergeBtn.disabled = true;
                 mergeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merging...';
                 results.style.display = 'none';
                 
-                // Simulate merge process (replace with actual PDF merging)
-                setTimeout(() => {
-                    // Create a dummy blob for demonstration
-                    const mergedBlob = new Blob(['Simulated merged PDF content'], { type: 'application/pdf' });
-                    const mergedUrl = URL.createObjectURL(mergedBlob);
-                    
-                    // Set up download
-                    downloadBtn.href = mergedUrl;
-                    downloadBtn.download = 'merged-document.pdf';
-                    
-                    // Show results
+                try {
+                    mergedPdfBytes = await mergePdfs(pdfFiles);
+                    downloadBtn.download = getMergedFilename();
+                    results.style.display = 'block';
+                } catch (error) {
+                    console.error("Merge error:", error);
+                    alert("Failed to merge PDFs: " + error.message);
+                } finally {
                     spinner.style.display = 'none';
                     mergeBtn.disabled = false;
                     mergeBtn.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
-                    results.style.display = 'block';
-                    
-                    // Scroll to results
-                    results.scrollIntoView({ behavior: 'smooth' });
-                }, 2000);
+                }
             });
             
-            // Reset tool
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (mergedPdfBytes) {
+                    download(mergedPdfBytes, downloadBtn.download, 'application/pdf');
+                } else {
+                    alert('No merged PDF available. Please merge files first.');
+                }
+            });
+            
             resetBtn.addEventListener('click', function() {
                 pdfFiles = [];
+                mergedPdfBytes = null;
                 fileInput.value = '';
                 renderPdfList();
                 results.style.display = 'none';
             });
             
-            // Format file size
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -713,31 +683,6 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
         });
-        
-        // Load AdSense ads
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    
-    <!-- Structured Data for SEO -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "PDF Merger",
-      "url": "https://yourdomain.com/pdf-merger",
-      "description": "Free online tool to merge multiple PDF files into one document. No registration required.",
-      "applicationCategory": "DocumentApplication",
-      "operatingSystem": "Any",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "creator": {
-        "@type": "Organization",
-        "name": "PDFTools"
-      }
-    }
     </script>
 </body>
 </html>
