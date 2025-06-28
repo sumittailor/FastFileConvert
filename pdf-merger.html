@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... (previous meta tags and styles) ... -->
+    <!-- Add PDF-lib and download.js -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+</head>
+<body>
+    <!-- ... (previous HTML structure) ... -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... (previous initialization code) ...
+
+            let mergedPdfBytes = null; // Store merged PDF bytes
+
+            mergeBtn.addEventListener('click', async function() {
+                if (pdfFiles.length === 0) {
+                    alert('Please add at least one PDF file.');
+                    return;
+                }
+
+                spinner.style.display = 'block';
+                mergeBtn.disabled = true;
+                mergeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merging...';
+                results.style.display = 'none';
+
+                try {
+                    mergedPdfBytes = await mergePdfs(pdfFiles);
+                    
+                    downloadBtn.download = getMergedFilename();
+                    results.style.display = 'block';
+                    
+                } catch (error) {
+                    console.error("Merge error:", error);
+                    alert("Failed to merge PDFs. Please try again.");
+                } finally {
+                    spinner.style.display = 'none';
+                    mergeBtn.disabled = false;
+                    mergeBtn.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
+                }
+            });
+
+            // Proper PDF merging with PDF-lib
+            async function mergePdfs(pdfFiles) {
+                const { PDFDocument } = PDFLib;
+                
+                const mergedPdf = await PDFDocument.create();
+                
+                for (const pdfFile of pdfFiles) {
+                    try {
+                        const pdfBytes = await pdfFile.arrayBuffer();
+                        const pdfDoc = await PDFDocument.load(pdfBytes);
+                        
+                        const pages = await mergedPdf.copyPages(pdfDoc, 
+                            pdfDoc.getPageIndices());
+                        pages.forEach(page => mergedPdf.addPage(page));
+                    } catch (err) {
+                        console.error(`Error processing ${pdfFile.name}:`, err);
+                        throw new Error(`Failed to process ${pdfFile.name}. It may be corrupted or password protected.`);
+                    }
+                }
+                
+                return await mergedPdf.save();
+            }
+
+            function getMergedFilename() {
+                if (pdfFiles.length === 1) {
+                    return pdfFiles[0].name.replace('.pdf', '-merged.pdf');
+                }
+                const baseName = pdfFiles[0].name.split('.')[0];
+                return `${baseName}-merged-${new Date().getTime()}.pdf`;
+            }
+
+            // Proper download handling
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (mergedPdfBytes) {
+                    download(mergedPdfBytes, downloadBtn.download, 'application/pdf');
+                } else {
+                    alert('No merged PDF available. Please merge files first.');
+                }
+            });
+
+            // ... (rest of your code) ...
+        });
+    </script>
+</body>
+</html>
