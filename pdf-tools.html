@@ -18,7 +18,6 @@
     
     <!-- PDF Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     
     <style>
         :root {
@@ -542,7 +541,7 @@
             <nav class="navbar">
                 <a href="index.html" class="logo">
                     <i class="fas fa-file-pdf"></i>
-                    <span>FastFileConvert</span>
+                    <span>PDFTools Pro</span>
                 </a>
                 <a href="index.html" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> More Tools
@@ -894,7 +893,7 @@
                 const fileExt = file.name.split('.').pop().toLowerCase();
                 
                 if (!validExtensions.includes(fileExt)) {
-                    alert(`Please select a valid ${conversionType === 'to-pdf' ? 'source' : 'PDF'} file`);
+                    showError(`Please select a valid ${conversionType === 'to-pdf' ? 'source' : 'PDF'} file`);
                     return;
                 }
                 
@@ -930,8 +929,10 @@
                         
                         if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
                             convertedBlob = await convertImageToPdf(currentFile);
+                        } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(fileExt)) {
+                            convertedBlob = await convertOfficeToPdf(currentFile, fileExt);
                         } else {
-                            convertedBlob = await simulateConversion(currentFile, 'pdf');
+                            convertedBlob = await convertOfficeToPdf(currentFile, 'doc');
                         }
                     } else {
                         outputExt = format;
@@ -1008,6 +1009,62 @@
                             }
                         };
                         img.src = e.target.result;
+                    };
+                    
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+            
+            async function convertOfficeToPdf(file, fileType) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        try {
+                            const { jsPDF } = window.jspdf;
+                            const pdf = new jsPDF({
+                                orientation: orientation,
+                                unit: 'mm',
+                                format: pageSize === 'a4' ? 'a4' : 'letter'
+                            });
+                            
+                            // Set font
+                            pdf.setFontSize(16);
+                            pdf.setFont(undefined, 'bold');
+                            
+                            // Add title
+                            pdf.text(`${fileType.toUpperCase()} to PDF Conversion`, 105, 20, null, null, 'center');
+                            
+                            // Add content
+                            pdf.setFontSize(12);
+                            pdf.setFont(undefined, 'normal');
+                            const text = [
+                                `File Name: ${file.name}`,
+                                `Original Format: ${fileType.toUpperCase()}`,
+                                `Converted to PDF: ${new Date().toLocaleString()}`,
+                                `Page Size: ${pageSize}`,
+                                `Orientation: ${orientation}`,
+                                `Margins: ${margin}`
+                            ];
+                            
+                            let y = 40;
+                            text.forEach(line => {
+                                pdf.text(line, 20, y);
+                                y += 10;
+                            });
+                            
+                            // Add note
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(100, 100, 100);
+                            pdf.text("Note: This is a frontend simulation. Actual Office document conversion requires backend processing.", 20, y + 20, { maxWidth: 170 });
+                            
+                            // Generate PDF blob
+                            const pdfBlob = pdf.output('blob');
+                            resolve(pdfBlob);
+                        } catch (error) {
+                            reject(error);
+                        }
                     };
                     
                     reader.onerror = reject;
