@@ -1422,8 +1422,29 @@
                     reader.readAsDataURL(file);
                 });
             }
-            
-            async function simulateConversion(file, targetFormat) {
+//Start update
+async function uploadAndConvertOfficeFile(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch('/api/convert-office-to-pdf', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (response.ok) {
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    // Set download link
+    downloadBtn.href = url;
+    downloadBtn.download = `converted-${file.name}.pdf`;
+    // Show success UI
+  } else {
+    // Handle errors
+  }
+}
+            // End
+async function simulateConversion(file, targetFormat) {
                 return new Promise((resolve) => {
                     // Simulate processing time
                     setTimeout(() => {
