@@ -1515,6 +1515,87 @@ async function simulateConversion(file, targetFormat) {
                 }, 5000);
             }
         });
+       //Start download update //
+        function updateFileAccept() {
+  if (conversionType === 'to-pdf') {
+    fileInput.accept = '.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx,.xls,.xlsx';
+  } else {
+    fileInput.accept = '.pdf';
+  }
+}
+
+async function convertFile() {
+  if (!currentFile) {
+    showError('Please select a file first');
+    return;
+  }
+
+  spinner.style.display = 'block';
+  convertBtn.disabled = true;
+  convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+  results.style.display = 'none';
+
+  try {
+    const fileExt = currentFile.name.split('.').pop().toLowerCase();
+    let convertedBlob;
+    let outputExt = 'pdf';
+
+    if (conversionType === 'to-pdf') {
+      // Handle 'to PDF' conversions
+      if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
+        convertedBlob = await convertImageToPdf(currentFile);
+        outputExt = 'pdf';
+      } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(fileExt)) {
+        // Simulate Office to PDF
+        convertedBlob = await convertOfficeToPdf(currentFile, fileExt);
+        outputExt = 'pdf';
+      } else {
+        showError('Unsupported file format for conversion to PDF.');
+        throw new Error('Unsupported format');
+      }
+    } else {
+      // Handle 'from PDF' conversions
+      if (format === 'word') {
+        // Simulate PDF to Word
+        convertedBlob = await simulateConversion(currentFile, 'word');
+      } else if (format === 'excel') {
+        // Simulate PDF to Excel
+        convertedBlob = await simulateConversion(currentFile, 'excel');
+      } else if (format === 'powerpoint') {
+        // Simulate PDF to PPT
+        convertedBlob = await simulateConversion(currentFile, 'powerpoint');
+      } else if (format === 'jpg') {
+        // Simulate PDF to JPG
+        convertedBlob = await simulateConversion(currentFile, 'jpg');
+      } else {
+        showError('Unsupported output format.');
+        throw new Error('Unsupported format');
+      }
+      outputExt = format;
+    }
+
+    // Create download link
+    const url = URL.createObjectURL(convertedBlob);
+    downloadBtn.href = url;
+    const filename = `converted-${currentFile.name.split('.')[0]}.${outputExt}`;
+    downloadBtn.download = filename;
+    document.getElementById('convertedFileName').textContent = filename;
+    document.getElementById('convertedFileSize').textContent = formatFileSize(convertedBlob.size);
+
+    spinner.style.display = 'none';
+    convertBtn.disabled = false;
+    convertBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> Convert Now';
+    results.style.display = 'block';
+    results.scrollIntoView({ behavior: 'smooth' });
+  } catch (err) {
+    console.error(err);
+    showError('Conversion failed. Please try again.');
+    spinner.style.display = 'none';
+    convertBtn.disabled = false;
+    convertBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> Convert Now';
+  }
+}
+        //end//
     </script>
 </body>
 </html>
