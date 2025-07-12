@@ -92,6 +92,21 @@
         .logo:hover {
             transform: translateY(-2px);
         }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
 
         /* Ad Blocks */
         .ad-container {
@@ -867,6 +882,10 @@
                     <i class="fas fa-file-pdf"></i>
                     <span>PDFTools Pro</span>
                 </a>
+                 <div class="nav-links">
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <a href="Contact.html"><i class="fas fa-envelope"></i> Contact</a>
+                </div>
             </nav>
         </div>
     </header>
