@@ -200,7 +200,7 @@
             z-index: 1;
         }
 
-        .hero h1 {
+        .hero h2 {
             font-size: 48px;
             margin-bottom: 20px;
             color: var(--dark);
@@ -250,6 +250,93 @@
 
         .search-bar input:focus + i {
             color: var(--primary);
+        }
+        
+        /* Search Results */
+        .search-results {
+            position: relative;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .search-results.active {
+            display: block;
+        }
+        
+        .result-item {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--light-gray);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-item:hover {
+            background-color: var(--lighter-gray);
+        }
+        
+        .result-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .result-content {
+            flex: 1;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        
+        .result-type {
+            font-size: 14px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .result-type .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .result-type .badge-category {
+            background-color: rgba(72, 149, 239, 0.15);
+            color: var(--accent);
+        }
+        
+        .result-type .badge-tool {
+            background-color: rgba(247, 37, 133, 0.15);
+            color: var(--danger);
+        }
+        
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--gray);
         }
 
         /* Categories */
@@ -837,6 +924,10 @@
                 width: 80px;
                 height: 80px;
             }
+            
+            .search-results {
+                max-height: 300px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -899,6 +990,16 @@
                 bottom: 20px;
                 right: 20px;
             }
+            
+            .result-item {
+                padding: 12px 15px;
+            }
+            
+            .result-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -907,7 +1008,7 @@
     <header id="header">
         <div class="container">
             <nav class="navbar">
-                <a href="#" class="logo">
+                <a href="index.html" class="logo">
                     <i class="fas fa-tools"></i>
                     <span>FastFreeConvert</span>
                 </a>
@@ -937,7 +1038,10 @@
             
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search for tools...">
+                <input type="text" id="searchInput" placeholder="Search for tools...">
+                <div class="search-results" id="searchResults">
+                    <!-- Results will be populated here -->
+                </div>
             </div>
         </div>
     </section>
@@ -1186,7 +1290,7 @@
                     <h3>Image Tools</h3>
                     <ul class="footer-links">
                         <li><a href="image-compressor.html">Image Compressor</a></li>
-                        <li><a href="#">Image Converter</a></li>
+                        <li><a href="image-tools.html">Image Converter</a></li>
                         <li><a href="#">Image Resizer</a></li>
                         <li><a href="#">Image Cropper</a></li>
                         <li><a href="#">Image Editor</a></li>
@@ -1196,8 +1300,8 @@
                 <div class="footer-col">
                     <h3>PDF Tools</h3>
                     <ul class="footer-links">
-                        <li><a href="#">PDF Merger</a></li>
-                        <li><a href="#">PDF Splitter</a></li>
+                        <li><a href="pdf-merger-split.html">PDF Merger</a></li>
+                        <li><a href="pdf-merger-split.html">PDF Splitter</a></li>
                         <li><a href="#">PDF Compressor</a></li>
                         <li><a href="#">PDF to JPG</a></li>
                         <li><a href="#">PDF to Word</a></li>
@@ -1331,6 +1435,154 @@
         
         // Initialize header state
         window.dispatchEvent(new Event('scroll'));
+        
+        // Search Functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        // Search index data
+        const searchIndex = [
+            {
+                title: "Image Tools",
+                type: "category",
+                url: "image-tools.html",
+                icon: "fas fa-image",
+                description: "Compress, convert, resize and edit your images"
+            },
+            {
+                title: "PDF Tools",
+                type: "category",
+                url: "pdf-tools.html",
+                icon: "fas fa-file-pdf",
+                description: "Merge, split, compress and convert PDF files"
+            },
+            {
+                title: "Compression",
+                type: "category",
+                url: "image-compressor.html",
+                icon: "fas fa-compress-alt",
+                description: "Reduce file sizes without losing quality"
+            },
+            {
+                title: "Converters",
+                type: "category",
+                url: "#",
+                icon: "fas fa-exchange-alt",
+                description: "Convert between different file formats"
+            },
+            {
+                title: "Image Compressor",
+                type: "tool",
+                url: "/tool/image-compressor.html",
+                icon: "fas fa-compress-arrows-alt",
+                description: "Reduce image file size without quality loss"
+            },
+            {
+                title: "PDF Merger & Split",
+                type: "tool",
+                url: "pdf-merger-split.html",
+                icon: "fas fa-file-pdf",
+                description: "Combine & Split multiple PDF files"
+            },
+            {
+                title: "Image Converter",
+                type: "tool",
+                url: "image-tools.html",
+                icon: "fas fa-exchange-alt",
+                description: "Convert between JPG, PNG, WEBP"
+            },
+            {
+                title: "PDF to JPG",
+                type: "tool",
+                url: "pdf-tools2.html",
+                icon: "fas fa-file-export",
+                description: "Convert PDF pages to high-quality JPG images"
+            },
+            {
+                title: "Image Resizer",
+                type: "tool",
+                url: "#",
+                icon: "fas fa-crop-alt",
+                description: "Resize your images to exact dimensions"
+            },
+            {
+                title: "PDF Compressor",
+                type: "tool",
+                url: "#",
+                icon: "fas fa-file-contract",
+                description: "Reduce PDF file size while maintaining quality"
+            }
+        ];
+        
+        // Search function
+        function performSearch(query) {
+            if (!query) {
+                searchResults.classList.remove('active');
+                return;
+            }
+            
+            const searchTerm = query.toLowerCase().trim();
+            const results = searchIndex.filter(item => 
+                item.title.toLowerCase().includes(searchTerm) || 
+                item.description.toLowerCase().includes(searchTerm)
+            );
+            
+            displayResults(results);
+        }
+        
+        // Display results
+        function displayResults(results) {
+            searchResults.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">No tools found. Try a different search term.</div>';
+                searchResults.classList.add('active');
+                return;
+            }
+            
+            results.forEach(result => {
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result-item';
+                resultElement.innerHTML = `
+                    <div class="result-icon">
+                        <i class="${result.icon}"></i>
+                    </div>
+                    <div class="result-content">
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-type">
+                            <span class="badge badge-${result.type}">${result.type === 'category' ? 'Category' : 'Tool'}</span>
+                            <span>${result.description}</span>
+                        </div>
+                    </div>
+                `;
+                
+                resultElement.addEventListener('click', () => {
+                    window.location.href = result.url;
+                });
+                
+                searchResults.appendChild(resultElement);
+            });
+            
+            searchResults.classList.add('active');
+        }
+        
+        // Event listeners
+        searchInput.addEventListener('input', () => {
+            performSearch(searchInput.value);
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+        
+        // Close search when pressing escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchResults.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
