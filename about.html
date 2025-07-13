@@ -52,15 +52,30 @@
             align-items: center;
         }
 
-        .logo {
-            font-size: 24px;
+        ..logo {
+            font-size: 28px;
             font-weight: 700;
             color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: var(--transition);
         }
+
+        .logo i {
+            font-size: 32px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo:hover i {
+            transform: rotate(-10deg);
+        }
+
 
         .btn {
             display: inline-block;
@@ -333,7 +348,7 @@
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">
-                    <i class="fas fa-file-pdf"></i>
+                    <i class="fas fa-tools"></i>
                     <span>Fast Free Convert</span>
                 </a>
                 <a href="index.html" class="btn">
