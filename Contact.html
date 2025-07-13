@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Contact our team for inquiries, support, or feedback. We're here to help you with any questions.">
     <meta name="keywords" content="contact, support, help, inquiry, feedback">
-    <meta name="author" content="Your Company Name">
+    <meta name="author" content="Fast Free Convert">
     <meta name="robots" content="index, follow">
     <title>Contact Us | Fast Free Convert</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+    <script>
+        (function() {
+            emailjs.init("7DLXgezC6pIgSfwi9"); // Replace with your EmailJS user ID
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -180,6 +186,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover {
@@ -189,6 +197,22 @@
 
         .btn:active {
             transform: translateY(0);
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         /* Contact Info */
@@ -358,6 +382,15 @@
             margin-top: 20px;
             display: none;
         }
+        
+        .error-message-form {
+            background: var(--error);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -410,7 +443,9 @@
                 </a>
                 <ul class="nav-links">
                     <li><a href="index.html">Home</a></li>
-                    <li><a href="About.html">About</a></li
+                    <li><a href="About.html">About</a></li>
+                    <li><a href="#">Tools</a></li>
+                    <li><a href="#">Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -432,13 +467,13 @@
                 <h2 class="form-title">Send us a message</h2>
                 <form id="contactForm">
                     <div class="form-group">
-                        <label for="name">Full Name</label>
+                        <label for="name">Full Name *</label>
                         <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
                         <div class="error-message" id="nameError">Please enter your name</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="email">Email Address</label>
+                        <label for="email">Email Address *</label>
                         <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
                         <div class="error-message" id="emailError">Please enter a valid email address</div>
                     </div>
@@ -449,20 +484,23 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="subject">Subject</label>
+                        <label for="subject">Subject *</label>
                         <input type="text" id="subject" class="form-control" placeholder="What is this regarding?" required>
                         <div class="error-message" id="subjectError">Please enter a subject</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="message">Your Message</label>
+                        <label for="message">Your Message *</label>
                         <textarea id="message" class="form-control" placeholder="How can we help you?" required></textarea>
                         <div class="error-message" id="messageError">Please enter your message</div>
                     </div>
                     
-                    <button type="submit" class="btn">Send Message</button>
+                    <button type="submit" class="btn" id="submitBtn">Send Message</button>
                     <div class="success-message" id="successMessage">
                         <i class="fas fa-check-circle"></i> Thank you! Your message has been sent successfully.
+                    </div>
+                    <div class="error-message-form" id="errorMessage">
+                        <i class="fas fa-exclamation-circle"></i> There was a problem sending your message. Please try again.
                     </div>
                 </form>
             </div>
@@ -542,6 +580,7 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="about.html">About Us</a></li>
                         <li><a href="index.html">Services</a></li>
+                        <li><a href="#">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -567,7 +606,7 @@
             </div>
             
             <div class="copyright">
-                <p>&copy; 2023 Your Company Name. All rights reserved.</p>
+                <p>&copy; 2023 Fast Free Convert. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -575,7 +614,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const contactForm = document.getElementById('contactForm');
+            const submitBtn = document.getElementById('submitBtn');
             const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Initialize EmailJS with your user ID
+            emailjs.init("7DLXgezC6pIgSfwi9"); // Replace with your EmailJS user ID
             
             // Form validation and submission
             contactForm.addEventListener('submit', function(e) {
@@ -585,6 +629,8 @@
                 document.querySelectorAll('.error-message').forEach(el => {
                     el.style.display = 'none';
                 });
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
                 
                 let isValid = true;
                 
@@ -617,19 +663,55 @@
                     isValid = false;
                 }
                 
-                if (isValid) {
-                    // In a real application, you would send the form data to a server here
-                    // For this example, we'll just show a success message
-                    
-                    // Show success message
-                    successMessage.style.display = 'block';
-                    
-                    // Reset form after 3 seconds
-                    setTimeout(function() {
+                if (!isValid) return;
+                
+                // Show loading state
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                
+                // Prepare email parameters
+                const templateParams = {
+                    from_name: nameInput.value.trim(),
+                    from_email: emailInput.value.trim(),
+                    phone: document.getElementById('phone').value.trim() || 'Not provided',
+                    subject: subjectInput.value.trim(),
+                    message: messageInput.value.trim()
+                };
+                
+                // Send email using EmailJS
+                emailjs.send('default_service', 'template_contact_form', templateParams)
+                    .then(function(response) {
+                        console.log('SUCCESS!', response.status, response.text);
+                        
+                        // Show success message
+                        successMessage.style.display = 'block';
+                        
+                        // Reset form
                         contactForm.reset();
-                        successMessage.style.display = 'none';
-                    }, 3000);
-                }
+                        
+                        // Remove loading state
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                        
+                        // Hide success message after 5 seconds
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 5000);
+                    }, function(error) {
+                        console.log('FAILED...', error);
+                        
+                        // Show error message
+                        errorMessage.style.display = 'block';
+                        
+                        // Remove loading state
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                        
+                        // Hide error message after 5 seconds
+                        setTimeout(() => {
+                            errorMessage.style.display = 'none';
+                        }, 5000);
+                    });
             });
             
             // Add smooth scrolling for anchor links
